@@ -11,33 +11,31 @@ COPY config/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 RUN apt-get update && apt-get install -y \
     vim \
-#    gnupg \
-#    g++ \
+    gnupg \
+    g++ \
     procps \
+    netcat-traditional \
+    libpq-dev \
     openssl \
     curl \
     git \
     unzip \
-#    netcat-traditional \
-    libxml2-dev \
-    libpq-dev \
     zlib1g-dev \
+    libonig-dev \
+    libxml2-dev \
     libzip-dev \
     libfreetype6-dev \
     libpng-dev \
-    libjpeg-dev \
-    libicu-dev  \
-    libonig-dev \
-#    libxslt1-dev \
-    acl
+    libjpeg-dev
 
 RUN echo 'alias sf="php bin/console"' >> ~/.bashrc
 
-# pdo pdo_mysql xsl
-RUN docker-php-ext-install pgsql pdo_pgsql zip gd intl opcache exif mbstring && \
-    pecl install apcu
+RUN docker-php-ext-install pgsql pdo_pgsql zip gd intl opcache exif mbstring
 
-RUN docker-php-ext-enable apcu pdo_pgsql sodium && \
+# Add xdebug
+RUN pecl install xdebug-3.2.1
+
+RUN docker-php-ext-enable pdo_pgsql sodium xdebug && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql && \
@@ -48,11 +46,8 @@ RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} >
     && printf '[PHP]\ndate.timezone = "%s"\n', ${TIMEZONE} > /usr/local/etc/php/conf.d/tzone.ini \
     && "date"
 
-# Add xdebug
-RUN pecl install xdebug
-RUN docker-php-ext-enable xdebug
-
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-#CMD composer i -o ; wait-for-it localhost:15432 -- bin/console doctrine:migrations:migrate ;  php
+# Checks weather PostgresDB is ready to use and runs symfony doctrine migrations
+#CMD composer i -o ; wait-for-it postgresDB:5432 -- php bin/console doctrine:migrations:migrate ;  php
 
