@@ -46,9 +46,8 @@ RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} >
 # Install composer and copy to usr/local/bin in order to run within the terminal
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Set "sf" aleas standing for "php bin/console" in bashrc file
 RUN echo 'alias sf="php bin/console"' >> ~/.bashrc
 
 # Checks weather PostgresDB is ready to use and runs symfony doctrine migrations
 CMD composer i -o ; wait-for-it postgresDB:5432 -- php bin/console doctrine:migrations:migrate ; php
-
-
