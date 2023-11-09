@@ -2,17 +2,18 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Repository\CarRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: CarRepository::class)]
 #[ApiResource]
+#[ORM\Entity(repositoryClass: CarRepository::class)]
+#[ApiFilter(RangeFilter::class, properties: ['reviews.starRating'])]
 class Car
 {
     #[ORM\Id]
@@ -21,12 +22,17 @@ class Car
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'The brand name could not leave blank')]
+    #[Assert\Length(max: 50, maxMessage: 'The brand name must be less than {{ max }} characters to enter')]
     private ?string $brand = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'The model name could not leave blank')]
+    #[Assert\Length(max: 100, maxMessage: 'The model name must be less than {{ max }} characters to enter')]
     private ?string $model = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\Length(max: 20, maxMessage: 'The color name must be less than {{ max }} characters to enter')]
     private ?string $color = null;
 
     #[ORM\OneToMany(mappedBy: 'carId', targetEntity: Review::class, orphanRemoval: true)]

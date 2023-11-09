@@ -1,9 +1,9 @@
 
 ###> symfony/framework-bundle ###
-/.idea
-/src/.idea
-/docker/.idea
-/docker/db/
+/.idea/*
+/src/.idea/
+/docker/.idea/*
+/docker/db/*
 /docker/logs/
 /.env.local
 /.env.local.php
