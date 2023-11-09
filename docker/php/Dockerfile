@@ -2,9 +2,6 @@ FROM php:8.1-fpm
 ARG TIMEZONE
 WORKDIR /var/www
 
-COPY wait-for-it.sh /usr/bin/wait-for-it
-RUN chmod +x /usr/bin/wait-for-it
-
 COPY config/php.ini /usr/local/etc/php/conf.d/php.ini
 COPY config/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
@@ -46,8 +43,14 @@ RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} >
 # Install composer and copy to usr/local/bin in order to run within the terminal
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Set "sf" aleas standing for "php bin/console" in bashrc file
-RUN echo 'alias sf="php bin/console"' >> ~/.bashrc
-
+#TODO create executable shorthand command for "php bin/console" as "sf"
 # Checks weather PostgresDB is ready to use and runs symfony doctrine migrations
-CMD composer i -o ; wait-for-it postgresDB:5432 -- php bin/console doctrine:migrations:migrate ; php
+#CMD php bin/console doctrine:migrations:migrate ; php ;
+
+#TODO use test environment in Dockerfile
+# Prepars the test environment including test database
+#CMD composer require --dev alice symfony/test-pack symfony/http-client justinrainbow/json-schema ;
+#CMD php bin/console --env=test doctrine:database:create ;
+#CMD php bin/console --env=test doctrine:migrations:migrate ;
+#CMD php bin/console --env=test heutelook:fixtures:load ;
+#CMD <env name="SYMFONY_ DEPRECATIONS_HELPER" value="disabled" />
