@@ -46,7 +46,7 @@ RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} >
     && printf '[PHP]\ndate.timezone = "%s"\n', ${TIMEZONE} > /usr/local/etc/php/conf.d/tzone.ini \
     && "date"
 
-COPY --from=composer /usr/bin/composer /usr/bin/composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 # Checks weather PostgresDB is ready to use and runs symfony doctrine migrations
 #CMD composer i -o ; wait-for-it postgresDB:5432 -- php bin/console doctrine:migrations:migrate ;  php
