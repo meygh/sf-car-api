@@ -2,33 +2,30 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
 use App\Repository\ReviewsRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ApiResource(description: 'Retrieves the collection of Car reviews sorted ascending.', order: ['id' => 'ASC'])]
-#[ApiResource(operations: [
-    new GetCollection(),
-    new GetCollection(
-        uriTemplate: 'latest-reviews',
-        order: ['id' => 'DESC'],
+#[
+    ApiResource(
         description: 'Retrieves the collection of Car reviews sorted descending.',
-        name: 'latest_reviews'
-    )
-])]
-#[ORM\Entity(repositoryClass: ReviewsRepository::class)]
+        order: ['id' => 'DESC']
+    ),
+]
+#[ApiFilter(OrderFilter::class, properties: ['id' => 'DESC', 'starRating'])]
 #[ApiFilter(RangeFilter::class, properties: ['starRating'])]
 #[ApiFilter(SearchFilter::class, properties: [
     'id' => 'exact',
     'carId' => 'exact',
     'reviewText' => 'partial'
 ])]
+#[ORM\Entity(repositoryClass: ReviewsRepository::class)]
 class Review
 {
     #[ORM\Id]

@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
-use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use App\Controller\CarLatestReviewsController;
 use App\Repository\CarRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,8 +12,21 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource]
+#[
+    ApiResource(
+        operations: [
+            new GetCollection(
+                uriTemplate: '/cars/{id}/latest-reviews',
+                controller: CarLatestReviewsController::class,
+                paginationEnabled: false,
+                description: 'Retrieves the latest top reviews for a specific car with starRating >= 6.',
+                read: false,
+                name: 'car_latest_reviews'
+            )
+        ],
+    ),
+]
 #[ORM\Entity(repositoryClass: CarRepository::class)]
-#[ApiFilter(RangeFilter::class, properties: ['reviews.starRating'])]
 class Car
 {
     #[ORM\Id]

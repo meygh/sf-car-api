@@ -20,29 +20,24 @@ class CarRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Car::class);
     }
-
-//    /**
-//     * @return Car[] Returns an array of Car objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Car
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    
+    /**
+     * Get the latest reviews for a specific car with starRating >= 6.
+     *
+     * @param int $carId
+     * @return array
+     */
+    public function getLatestReviewsForCar(int $carId): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.id as carId, r.id as reviewId, r.starRating, r.reviewText') // Add any other fields you need
+            ->leftJoin('c.reviews', 'r') // Assuming your relation is named "reviews"
+            ->where('c.id = :carId')
+            ->andWhere('r.starRating >= 6')
+            ->orderBy('r.id', 'DESC') // Assuming you have a createdAt field in your Review entity
+            ->setMaxResults(5) // Adjust the number of reviews to retrieve as needed
+            ->setParameter('carId', $carId)
+            ->getQuery()
+            ->getResult();
+    }
 }
